@@ -22,10 +22,10 @@ _security = LocalProxy(lambda: app.extensions['security'])
 
 _datastore = LocalProxy(lambda: _security.datastore)
 
-
 def register_user(**kwargs):
     confirmation_link, token = None, None
     kwargs['password'] = hash_password(kwargs['password'])
+
     user = _datastore.create_user(**kwargs)
     _datastore.commit()
 
@@ -37,7 +37,7 @@ def register_user(**kwargs):
                          user=user, confirm_token=token)
 
     if config_value('SEND_REGISTER_EMAIL'):
-        send_mail(config_value('EMAIL_SUBJECT_REGISTER'), user.email,
+        send_mail(str(config_value('EMAIL_SUBJECT_REGISTER')), user.email,
                   'welcome', user=user, confirmation_link=confirmation_link)
 
     return user

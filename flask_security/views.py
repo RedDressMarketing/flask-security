@@ -28,7 +28,7 @@ from .utils import config_value, do_flash, get_message, \
     get_post_login_redirect, get_post_logout_redirect, \
     get_post_register_redirect, get_url, login_user, logout_user, \
     slash_url_suffix
-
+import stripe
 # Convenient references
 _security = LocalProxy(lambda: current_app.extensions['security'])
 
@@ -68,16 +68,14 @@ def login():
     """View function for login view"""
 
     form_class = _security.login_form
-
     if request.is_json:
         form = form_class(MultiDict(request.get_json()))
     else:
         form = form_class(request.form)
 
-    if form.validate_on_submit():
+    if form.validate():
         login_user(form.user, remember=form.remember.data)
         after_this_request(_commit)
-
         if not request.is_json:
             return redirect(get_post_login_redirect(form.next.data))
 
@@ -101,7 +99,6 @@ def logout():
 @anonymous_user_required
 def register():
     """View function which handles a registration request."""
-
     if _security.confirmable or request.is_json:
         form_class = _security.confirm_register_form
     else:
@@ -113,11 +110,26 @@ def register():
         form_data = request.form
 
     form = form_class(form_data)
-
     if form.validate_on_submit():
+        customer = stripe.Customer.create(
+            email=form.email.data,
+            source=request.form['stripe_token_']
+        )
+        subscription = stripe.Subscription.create(
+            customer=customer.id,
+            billing="send_invoice",
+            trial_period_days=15,
+            days_until_due=15,
+            items=[
+                {"plan": "basic",}
+            ]
+        )
+        print(customer)
+        print(subscription)
         user = register_user(**form.to_dict())
         form.user = user
-
+        user.stripe_customer_id = customer.id
+        print(user.stripe_customer_id)
         if not _security.confirmable or _security.login_without_confirmation:
             after_this_request(_commit)
             login_user(user)
