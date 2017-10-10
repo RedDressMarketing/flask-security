@@ -117,7 +117,6 @@ def register():
         )
         subscription = stripe.Subscription.create(
             customer=customer.id,
-            billing="send_invoice",
             trial_period_days=15,
             days_until_due=15,
             items=[
