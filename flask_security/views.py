@@ -123,12 +123,9 @@ def register():
                 {"plan": "basic",}
             ]
         )
-        print(customer)
-        print(subscription)
         user = register_user(**form.to_dict())
         form.user = user
         user.stripe_customer_id = customer.id
-        print(user.stripe_customer_id)
         if not _security.confirmable or _security.login_without_confirmation:
             after_this_request(_commit)
             login_user(user)
