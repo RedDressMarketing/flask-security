@@ -118,7 +118,6 @@ def register():
         subscription = stripe.Subscription.create(
             customer=customer.id,
             trial_period_days=15,
-            days_until_due=15,
             items=[
                 {"plan": "basic",}
             ]
