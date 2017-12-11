@@ -117,7 +117,7 @@ def register():
         )
         subscription = stripe.Subscription.create(
             customer=customer.id,
-            trial_period_days=15,
+            billing='charge_automatically',
             items=[
                 {"plan": "basic",}
             ]
