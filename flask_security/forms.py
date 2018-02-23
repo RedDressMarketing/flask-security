@@ -257,7 +257,7 @@ class LoginForm(Form, NextFormMixin):
 
 class ConfirmRegisterForm(Form, RegisterFormMixin,
                           UniqueEmailFormMixin, NewPasswordFormMixin, PasswordConfirmFormMixin):
-    stripe_token = HiddenField(Required())
+    pass
 
 
 class RegisterForm(ConfirmRegisterForm, PasswordConfirmFormMixin,
