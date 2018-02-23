@@ -256,10 +256,8 @@ class LoginForm(Form, NextFormMixin):
 
 
 class ConfirmRegisterForm(Form, RegisterFormMixin,
-                          UniqueEmailFormMixin, NewPasswordFormMixin, PasswordConfirmFormMixin):
-
-    def __init__(self, *args, **kwargs):
-        super(ConfirmRegisterForm, self).__init__(*args, **kwargs)
+                          UniqueEmailFormMixin, NewPasswordFormMixin, PasswordConfirmFormMixin)
+    pass
 
 
 class RegisterForm(ConfirmRegisterForm, PasswordConfirmFormMixin,
