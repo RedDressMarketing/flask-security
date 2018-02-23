@@ -256,7 +256,7 @@ class LoginForm(Form, NextFormMixin):
 
 
 class ConfirmRegisterForm(Form, RegisterFormMixin,
-                          UniqueEmailFormMixin, NewPasswordFormMixin, PasswordConfirmFormMixin)
+                          UniqueEmailFormMixin, NewPasswordFormMixin, PasswordConfirmFormMixin):
     pass
 
 
