@@ -29,6 +29,7 @@ from .utils import config_value, do_flash, get_message, \
     get_post_register_redirect, get_url, login_user, logout_user, \
     slash_url_suffix
 import stripe
+
 # Convenient references
 _security = LocalProxy(lambda: current_app.extensions['security'])
 
@@ -37,7 +38,6 @@ _datastore = LocalProxy(lambda: _security.datastore)
 
 def _render_json(form, include_user=True, include_auth_token=False):
     has_errors = len(form.errors) > 0
-
     if has_errors:
         code = 400
         response = dict(errors=form.errors)
@@ -72,12 +72,12 @@ def login():
         form = form_class(MultiDict(request.get_json()))
     else:
         form = form_class(request.form)
-
-    if form.validate():
-        login_user(form.user, remember=form.remember.data)
-        after_this_request(_commit)
-        if not request.is_json:
-            return redirect(get_post_login_redirect(form.next.data))
+    if request.method == 'POST':
+        if form.validate():
+            login_user(form.user, remember=form.remember.data)
+            after_this_request(_commit)
+            if not request.is_json:
+                return redirect(get_post_login_redirect(form.next.data))
 
     if request.is_json:
         return _render_json(form, include_auth_token=True)
