@@ -110,7 +110,6 @@ def register():
         form_data = request.form
 
     form = form_class(form_data)
-    print(form_data)
     if request.method == 'POST':
         if form.validate_on_submit():
             customer = stripe.Customer.create(
@@ -124,9 +123,11 @@ def register():
                     {"plan": "basic",}
                 ]
             )
+            print('Subscription: %s' % subscription)
             user = register_user(**form.to_dict())
             form.user = user
             user.stripe_customer_id = customer.id
+            print('User: %s' % user)
             if not _security.confirmable or _security.login_without_confirmation:
                 after_this_request(_commit)
                 login_user(user)
