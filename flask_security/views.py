@@ -142,8 +142,8 @@ def register():
 
                 return redirect(redirect_url)
             return _render_json(form, include_auth_token=True)
-    else:
-        print('NOT VALIDATED!')
+        else:
+            print('NOT VALIDATED!')
     if request.is_json:
         return _render_json(form)
 
