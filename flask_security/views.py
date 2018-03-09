@@ -111,7 +111,9 @@ def register():
 
     form = form_class(form_data)
     if request.method == 'POST':
+        print('POST')
         if form.validate_on_submit():
+            print('VALIDATED')
             customer = stripe.Customer.create(
                 email=form.email.data,
                 source=request.form['stripe_token_']
@@ -140,7 +142,8 @@ def register():
 
                 return redirect(redirect_url)
             return _render_json(form, include_auth_token=True)
-
+    else:
+        print('NOT VALIDATED!')
     if request.is_json:
         return _render_json(form)
 
