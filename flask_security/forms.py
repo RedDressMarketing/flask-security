@@ -231,25 +231,19 @@ class LoginForm(Form, NextFormMixin):
             return False
 
         self.user = _datastore.get_user(self.email.data)
-        print(self.user)
         if self.user is None:
-            print('user doesn\'t exist')
             self.email.errors.append(get_message('USER_DOES_NOT_EXIST')[0])
             return False
         if not self.user.password:
-            print('password')
             self.password.errors.append(get_message('PASSWORD_NOT_SET')[0])
             return False
         if not verify_and_update_password(self.password.data, self.user):
-            print('password')
             self.password.errors.append(get_message('INVALID_PASSWORD')[0])
             return False
         if requires_confirmation(self.user):
-            print('confirm')
             self.email.errors.append(get_message('CONFIRMATION_REQUIRED')[0])
             return False
         if not self.user.is_active:
-            print('inactive')
             self.email.errors.append(get_message('DISABLED_ACCOUNT')[0])
             return False
         return True
