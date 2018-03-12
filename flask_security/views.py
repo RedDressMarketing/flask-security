@@ -124,7 +124,6 @@ def register():
                     {"plan": "basic",}
                 ]
             )
-            print('Subscription: %s' % subscription)
             user = register_user(**form.to_dict())
             form.user = user
             user.stripe_customer_id = customer.id
