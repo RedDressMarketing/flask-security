@@ -111,9 +111,7 @@ def register():
 
     form = form_class(form_data)
     if request.method == 'POST':
-        print('POST')
         if form.validate_on_submit():
-            print('VALIDATED')
             customer = stripe.Customer.create(
                 email=form.email.data,
                 source=request.form['stripe_token_']
@@ -121,6 +119,7 @@ def register():
             subscription = stripe.Subscription.create(
                 customer=customer.id,
                 billing='charge_automatically',
+                trial_period_days=15,
                 items=[
                     {"plan": "basic",}
                 ]
@@ -129,7 +128,6 @@ def register():
             user = register_user(**form.to_dict())
             form.user = user
             user.stripe_customer_id = customer.id
-            print('User: %s' % user)
             if not _security.confirmable or _security.login_without_confirmation:
                 after_this_request(_commit)
                 login_user(user)
@@ -142,8 +140,6 @@ def register():
 
                 return redirect(redirect_url)
             return _render_json(form, include_auth_token=True)
-        else:
-            print('NOT VALIDATED!')
     if request.is_json:
         return _render_json(form)
 
