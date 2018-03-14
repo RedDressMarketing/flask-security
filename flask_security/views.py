@@ -132,6 +132,7 @@ def register():
             print('request.form["stripe_token_"]: %s' % request.form['stripe_token_'])
             print('user.stripe_customer_id: %s' % user.stripe_customer_id)
             print('user.stripe_customer_card_id: %s' % user.stripe_customer_card_id)
+            _commit()
             if not _security.confirmable or _security.login_without_confirmation:
                 after_this_request(_commit)
                 login_user(user)
