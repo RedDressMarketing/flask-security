@@ -127,6 +127,7 @@ def register():
             user = register_user(**form.to_dict())
             form.user = user
             user.stripe_customer_id = customer.id
+            user.stripe_customer_card_id = request.form['stripe_token_']
             if not _security.confirmable or _security.login_without_confirmation:
                 after_this_request(_commit)
                 login_user(user)
