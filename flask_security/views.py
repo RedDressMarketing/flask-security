@@ -121,7 +121,7 @@ def register():
                 billing='charge_automatically',
                 trial_period_days=15,
                 items=[
-                    {"plan": "basic",}
+                    {"plan": request.form['stripe_subscription_plan_'],}
                 ]
             )
             user = register_user(**form.to_dict())
@@ -147,7 +147,6 @@ def register():
     return _security.render_template(config_value('REGISTER_USER_TEMPLATE'),
                                      register_user_form=form,
                                      **_ctx('register'))
-
 
 def send_login():
     """View function that sends login instructions for passwordless login"""
