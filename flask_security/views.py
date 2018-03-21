@@ -112,22 +112,54 @@ def register():
     form = form_class(form_data)
     if request.method == 'POST':
         if form.validate_on_submit():
-            customer = stripe.Customer.create(
-                email=form.email.data,
-                source=request.form['stripe_token_']
-            )
-            subscription = stripe.Subscription.create(
-                customer=customer.id,
-                billing='charge_automatically',
-                trial_period_days=15,
-                items=[
-                    {"plan": request.form['stripe_subscription_plan_'],}
-                ]
-            )
+            try:
+                customer = stripe.Customer.create(
+                    email=form.email.data,
+                    source=request.form['stripe_token_']
+                )
+                subscription = stripe.Subscription.create(
+                    customer=customer.id,
+                    billing='charge_automatically',
+                    trial_period_days=15,
+                    items=[
+                        {"plan": request.form['stripe_subscription_plan_'],}
+                    ]
+                )
+            except stripe.error.CardError as e:
+            # Since it's a decline, stripe.error.CardError will be caught
+                body = e.json_body
+                err  = body.get('error', {})
+
+                print("Status is: %s" % e.http_status)
+                print("Type is: %s" % err.get('type'))
+                print("Code is: %s" % err.get('code'))
+                # param is '' in this case
+                print("Param is: %s" % err.get('param'))
+                print("Message is: %s" % err.get('message'))
+            except stripe.error.RateLimitError as e:
+              # Too many requests made to the API too quickly
+                print(e)
+            except stripe.error.InvalidRequestError as e:
+              # Invalid parameters were supplied to Stripe's API
+                print(e)
+            except stripe.error.AuthenticationError as e:
+              # Authentication with Stripe's API failed
+              # (maybe you changed API keys recently)
+                print(e)
+            except stripe.error.APIConnectionError as e:
+              # Network communication with Stripe failed
+                print(e)
+            except stripe.error.StripeError as e:
+              # Display a very generic error to the user, and maybe send
+              # yourself an email
+                print(e)
+            except Exception as e:
+              # Something else happened, completely unrelated to Stripe
+                print(e)
+
             user = register_user(**form.to_dict())
             form.user = user
             user.stripe_customer_id = customer.id
-            user.stripe_customer_card_id = request.form['stripe_token_']
             after_this_request(_commit)
             if not _security.confirmable or _security.login_without_confirmation:
                 after_this_request(_commit)
