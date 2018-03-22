@@ -111,7 +111,7 @@ def register():
 
     form = form_class(form_data)
     if request.method == 'POST':
-        if form.validate_on_submit():            
+        if form.validate_on_submit():
             try:
                 customer = stripe.Customer.create(
                     email=form.email.data,
@@ -125,6 +125,7 @@ def register():
                         {"plan": request.form['stripe_subscription_plan_'],}
                     ]
                 )
+                print(subscription)
             except stripe.error.CardError as e:
             # Since it's a decline, stripe.error.CardError will be caught
                 body = e.json_body
