@@ -111,7 +111,7 @@ def register():
 
     form = form_class(form_data)
     if request.method == 'POST':
-        if form.validate_on_submit():
+        if form.validate_on_submit():            
             try:
                 customer = stripe.Customer.create(
                     email=form.email.data,
