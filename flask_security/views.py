@@ -157,8 +157,9 @@ def register():
             except Exception as e:
               # Something else happened, completely unrelated to Stripe
                 print(e)
-
+            print('Stripe sent... sending email!')
             user = register_user(**form.to_dict())
+            print('email sent!')
             form.user = user
             user.stripe_customer_id = customer.id
             after_this_request(_commit)
