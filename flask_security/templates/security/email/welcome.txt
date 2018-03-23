@@ -1,4 +1,4 @@
-{{ _('Welcome %(email)s!', email=user.email) }}
+{{ _('Welcome %(name)s!', name=user.first_name) }}
 
 {% if security.confirmable %}
 {{ _('You can confirm your email through the link below:') }}
