@@ -129,7 +129,6 @@ def register():
             # Since it's a decline, stripe.error.CardError will be caught
                 body = e.json_body
                 err  = body.get('error', {})
-
                 print("Status is: %s" % e.http_status)
                 print("Type is: %s" % err.get('type'))
                 print("Code is: %s" % err.get('code'))
