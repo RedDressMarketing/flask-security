@@ -117,15 +117,24 @@ def register():
                     email=form.email.data,
                     source=request.form['stripe_token_']
                 )
+                '''if 'stripe_coupon_code' in request.form:
+                    subscription = stripe.Subscription.create(
+                        customer=customer.id,
+                        billing='charge_automatically',
+                        items=[
+                            {"plan": request.form['stripe_subscription_plan_'],}
+                        ],
+                        coupon=request.form['stripe_coupon_code'])
+                else:'''
+                stripe_coupon_code = request.form['stripe_coupon_code'] if \
+                                     'stripe_coupon_code' in request.form else None
                 subscription = stripe.Subscription.create(
                     customer=customer.id,
                     billing='charge_automatically',
-                    trial_period_days=15,
                     items=[
                         {"plan": request.form['stripe_subscription_plan_'],}
-                    ]
-                )
-                print(subscription)
+                    ],
+                    coupon=stripe_coupon_code)
             except stripe.error.CardError as e:
             # Since it's a decline, stripe.error.CardError will be caught
                 body = e.json_body
@@ -156,9 +165,7 @@ def register():
             except Exception as e:
               # Something else happened, completely unrelated to Stripe
                 print(e)
-            print('Stripe sent... sending email!')
             user = register_user(**form.to_dict())
-            print('email sent!')
             form.user = user
             user.stripe_customer_id = customer.id
             after_this_request(_commit)
