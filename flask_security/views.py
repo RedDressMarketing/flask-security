@@ -117,24 +117,22 @@ def register():
                     email=form.email.data,
                     source=request.form['stripe_token_']
                 )
-                '''if 'stripe_coupon_code' in request.form:
+                if request.form['stripe_coupon_code'] != '':
+                    stripe_coupon_code = request.form['stripe_coupon_code']
                     subscription = stripe.Subscription.create(
                         customer=customer.id,
                         billing='charge_automatically',
                         items=[
                             {"plan": request.form['stripe_subscription_plan_'],}
                         ],
-                        coupon=request.form['stripe_coupon_code'])
-                else:'''
-                stripe_coupon_code = request.form['stripe_coupon_code'] if \
-                                     'stripe_coupon_code' in request.form else None
-                subscription = stripe.Subscription.create(
-                    customer=customer.id,
-                    billing='charge_automatically',
-                    items=[
-                        {"plan": request.form['stripe_subscription_plan_'],}
-                    ],
-                    coupon=stripe_coupon_code)
+                        coupon=stripe_coupon_code)
+                else:
+                    subscription = stripe.Subscription.create(
+                        customer=customer.id,
+                        billing='charge_automatically',
+                        items=[
+                            {"plan": request.form['stripe_subscription_plan_'],}
+                        ])
             except stripe.error.CardError as e:
             # Since it's a decline, stripe.error.CardError will be caught
                 body = e.json_body
@@ -168,6 +166,7 @@ def register():
             user = register_user(**form.to_dict())
             form.user = user
             user.stripe_customer_id = customer.id
+            user.stripe_coupon_code = request.form['stripe_coupon_code']
             after_this_request(_commit)
             if not _security.confirmable or _security.login_without_confirmation:
                 after_this_request(_commit)
